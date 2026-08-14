@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>آزمون ساز - طراحی آزمون</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="آزمون ساز">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            direction: rtl;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        input, textarea, select {
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 15px;
+            overflow-x: hidden;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        @media (min-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .container {
+                padding: 25px;
+                max-width: 900px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .info-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .container {
+                max-width: 1100px;
+            }
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .question-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .question-type-btn {
+            padding: 10px 15px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: inherit;
+            flex: 1;
+            min-width: calc(50% - 8px);
+        }
+        
+        @media (min-width: 768px) {
+            .question-type-btn {
+                flex: 0 1 auto;
+                min-width: auto;
+            }
+        }
+        
+        .question-type-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .question-form {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .question-form.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        @media (min-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: inherit;
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            .btn {
+                width: auto;
+            }
+        }
+        
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-danger { background: #f56565; color: white; }
+        .btn-warning { background: #ed8936; color: white; }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .questions-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .question-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        
+        .question-info {
+            margin-bottom: 8px;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #667eea;
+            margin-left: 8px;
+        }
+        
+        .question-type-badge {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .question-preview {
+            margin-top: 5px;
+            color: #495057;
+            font-size: 13px;
+        }
+        
+        .question-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 12px;
+            flex: 1;
+        }
+        
+        .toolbar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #e9ecef;
+            font-weight: bold;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        @media (min-width: 768px) {
+            .matching-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 آزمون ساز</h1>
+        
+        <!-- بخش مشخصات آزمون -->
+        <div class="section">
+            <div class="section-title">مشخصات آزمون</div>
+            <div class="info-grid">
+                <div class="form-group">
+                    <label>نام استان:</label>
+                    <input type="text" id="province" placeholder="مثلاً: آذربایجان شرقی">
+                </div>
+                <div class="form-group">
+                    <label>نام شهرستان:</label>
+                    <input type="text" id="city" placeholder="مثلاً: تبریز">
+                </div>
+                <div class="form-group">
+                    <label>نام ناحیه:</label>
+                    <input type="text" id="district" placeholder="مثلاً: ناحیه ۲">
+                </div>
+                <div class="form-group">
+                    <label>نام مدرسه:</label>
+                    <input type="text" id="school" placeholder="نام مدرسه">
+                </div>
+                <div class="form-group">
+                    <label>نام پایه:</label>
+                    <input type="text" id="grade" placeholder="مثلاً: ششم ابتدایی">
+                </div>
+                <div class="form-group">
+                    <label>نام کلاس:</label>
+                    <input type="text" id="class" placeholder="مثلاً: ۶/۲">
+                </div>
+                <div class="form-group">
+                    <label>تاریخ آزمون:</label>
+                    <input type="date" id="date">
+                </div>
+                <div class="form-group">
+                    <label>زمان آزمون:</label>
+                    <input type="time" id="time">
+                </div>
+                <div class="form-group">
+                    <label>نام و نام خانوادگی:</label>
+                    <input type="text" id="studentName" placeholder="نام دانش‌آموز">
+                </div>
+                <div class="form-group">
+                    <label>نام طراح سوال:</label>
+                    <input type="text" id="designerName" placeholder="نام طراح">
+                </div>
+            </div>
+        </div>
+        
+        <!-- بخش انتخاب نوع سوال -->
+        <div class="section">
+            <div class="section-title">انتخاب نوع سوال</div>
+            <div class="question-types">
+                <button class="question-type-btn active" data-type="fourChoice">چهار جوابی</button>
+                <button class="question-type-btn" data-type="trueFalse">صحیح/غلط</button>
+                <button class="question-type-btn" data-type="matching">وصل کردنی</button>
+                <button class="question-type-btn" data-type="fillBlank">جای خالی</button>
+                <button class="question-type-btn" data-type="essay">تشریحی</button>
+            </div>
+        </div>
+        
+        <!-- فرم سوالات -->
+        <div class="section">
+            <div class="section-title">فرم سوال</div>
+            
+            <div class="question-form active" id="fourChoiceForm">
+                <div class="form-group">
+                    <label>متن سوال:</label>
+                    <textarea id="fourChoiceText" rows="3" placeholder="متن سوال را وارد کنید..."></textarea>
+                </div>
+                <div class="options-container">
+                    <div class="form-group">
+                        <label>گزینه ۱:</label>
+                        <input type="text" id="option1" placeholder="گزینه اول">
+                    </div>
+                    <div class="form-group">
+                        <label>گزینه ۲:</label>
+                        <input type="text" id="option2" placeholder="گزینه دوم">
+                    </div>
+                    <div class="form-group">
+                        <label>گزینه ۳:</label>
+                        <input type="text" id="option3" placeholder="گزینه سوم">
+                    </div>
+                    <div class="form-group">
+                        <label>گزینه ۴:</label>
+                        <input type="text" id="option4" placeholder="گزینه چهارم">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>گزینه صحیح:</label>
+                    <select id="correctOption">
+                        <option value="1">گزینه ۱</option>
+                        <option value="2">گزینه ۲</option>
+                        <option value="3">گزینه ۳</option>
+                        <option value="4">گزینه ۴</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="addFourChoiceQuestion()" style="margin-top: 15px;">
+                    افزودن سوال
+                </button>
+            </div>
+            
+            <div class="question-form" id="trueFalseForm">
+                <div class="form-group">
+                    <label>متن سوال:</label>
+                    <textarea id="trueFalseText" rows="3" placeholder="متن سوال را وارد کنید..."></textarea>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>پاسخ صحیح:</label>
+                    <select id="trueFalseAnswer">
+                        <option value="صحیح">صحیح</option>
+                        <option value="غلط">غلط</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="addTrueFalseQuestion()" style="margin-top: 15px;">
+                    افزودن سوال
+                </button>
+            </div>
+            
+            <div class="question-form" id="matchingForm">
+                <div class="matching-container">
+                    <div class="form-group">
+                        <label>موارد (هر خط یک مورد):</label>
+                        <textarea id="matchingItems" rows="5" placeholder="مورد ۱&#10;مورد ۲&#10;مورد ۳"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>پاسخ‌های مرتبط (هر خط یک پاسخ):</label>
+                        <textarea id="matchingAnswers" rows="5" placeholder="پاسخ ۱&#10;پاسخ ۲&#10;پاسخ ۳"></textarea>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="addMatchingQuestion()" style="margin-top: 15px;">
+                    افزودن سوال
+                </button>
+            </div>
+            
+            <div class="question-form" id="fillBlankForm">
+                <div class="form-group">
+                    <label>متن سوال (با ___ برای جای خالی):</label>
+                    <textarea id="fillBlankText" rows="3" placeholder="مثلاً: پایتخت ایران ___ است."></textarea>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>پاسخ صحیح:</label>
+                    <input type="text" id="fillBlankAnswer" placeholder="پاسخ صحیح">
+                </div>
+                <button class="btn btn-success" onclick="addFillBlankQuestion()" style="margin-top: 15px;">
+                    افزودن سوال
+                </button>
+            </div>
+            
+            <div class="question-form" id="essayForm">
+                <div class="form-group">
+                    <label>متن سوال:</label>
+                    <textarea id="essayText" rows="3" placeholder="متن سوال را وارد کنید..."></textarea>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>پاسخ تشریحی (اختیاری):</label>
+                    <textarea id="essayAnswer" rows="3" placeholder="پاسخ تشریحی (اختیاری)"></textarea>
+                </div>
+                <button class="btn btn-success" onclick="addEssayQuestion()" style="margin-top: 15px;">
+                    افزودن سوال
+                </button>
+            </div>
+        </div>
+        
+        <!-- لیست سوالات -->
+        <div class="section">
+            <div class="section-title">سوالات ایجاد شده</div>
+            <div class="questions-list" id="questionsList">
+                <p style="text-align: center; color: #999;">هنوز سوالی اضافه نشده است</p>
+            </div>
+        </div>
+        
+        <!-- دکمه‌های عملیات -->
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="printExam()">🖨️ چاپ آزمون</button>
+            <button class="btn btn-primary" onclick="printAnswerKey()">📋 چاپ پاسخنامه</button>
+            <button class="btn btn-success" onclick="exportToFile()">💾 خروجی</button>
+            <button class="btn btn-warning" onclick="importFromFile()">📂 ورودی</button>
+            <button class="btn btn-danger" onclick="clearAllQuestions()">🗑️ پاک کردن</button>
+        </div>
+        
+        <!-- فوتر -->
+        <div class="footer">
+            فرزین رحیمی منامن ۰۹۹۶۴۰۰۲۹۴۲
+        </div>
+    </div>
+    
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+    
+    <script>
+        let questions = [];
+        let currentQuestionType = 'fourChoice';
+        
+        // بارگذاری سوالات از localStorage
+        function loadQuestions() {
+            const saved = localStorage.getItem('examQuestions');
+            if (saved) {
+                questions = JSON.parse(saved);
+                updateQuestionsList();
+            }
+        }
+        
+        // ذخیره سوالات در localStorage
+        function saveQuestions() {
+            localStorage.setItem('examQuestions', JSON.stringify(questions));
+        }
+        
+        // تغییر نوع سوال
+        document.querySelectorAll('.question-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.question-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentQuestionType = this.dataset.type;
+                document.querySelectorAll('.question-form').forEach(form => form.classList.remove('active'));
+                document.getElementById(currentQuestionType + 'Form').classList.add('active');
+            });
+        });
+        
+        // افزودن سوال چهار جوابی
+        function addFourChoiceQuestion() {
+            const text = document.getElementById('fourChoiceText').value.trim();
+            const options = [
+                document.getElementById('option1').value.trim(),
+                document.getElementById('option2').value.trim(),
+                document.getElementById('option3').value.trim(),
+                document.getElementById('option4').value.trim()
+            ];
+            const correct = document.getElementById('correctOption').value;
+            
+            if (!text || options.some(opt => !opt)) {
+                alert('لطفاً همه فیلدها را پر کنید');
+                return;
+            }
+            
+            questions.push({
+                type: 'fourChoice',
+                typeName: 'چهار جوابی',
+                text: text,
+                options: options,
+                correct: correct
+            });
+            
+            saveQuestions();
+            updateQuestionsList();
+            clearFourChoiceForm();
+            alert('سوال با موفقیت اضافه شد');
+        }
+        
+        // افزودن سوال صحیح/غلط
+        function addTrueFalseQuestion() {
+            const text = document.getElementById('trueFalseText').value.trim();
+            const answer = document.getElementById('trueFalseAnswer').value;
+            
+            if (!text) {
+                alert('لطفاً متن سوال را وارد کنید');
+                return;
+            }
+            
+            questions.push({
+                type: 'trueFalse',
+                typeName: 'صحیح/غلط',
+                text: text,
+                correct: answer
+            });
+            
+            saveQuestions();
+            updateQuestionsList();
+            document.getElementById('trueFalseText').value = '';
+            alert('سوال با موفقیت اضافه شد');
+        }
+        
+        // افزودن سوال وصل کردنی
+        function addMatchingQuestion() {
+            const items = document.getElementById('matchingItems').value.trim().split('\n').filter(item => item.trim());
+            const answers = document.getElementById('matchingAnswers').value.trim().split('\n').filter(answer => answer.trim());
+            
+            if (items.length === 0 || answers.length === 0) {
+                alert('لطفاً موارد و پاسخ‌ها را وارد کنید');
+                return;
+            }
+            
+            if (items.length !== answers.length) {
+                alert('تعداد موارد و پاسخ‌ها باید برابر باشد');
+                return;
+            }
+            
+            questions.push({
+                type: 'matching',
+                typeName: 'وصل کردنی',
+                items: items,
+                answers: answers
+            });
+            
+            saveQuestions();
+            updateQuestionsList();
+            document.getElementById('matchingItems').value = '';
+            document.getElementById('matchingAnswers').value = '';
+            alert('سوال با موفقیت اضافه شد');
+        }
+        
+        // افزودن سوال جای خالی
+        function addFillBlankQuestion() {
+            const text = document.getElementById('fillBlankText').value.trim();
+            const answer = document.getElementById('fillBlankAnswer').value.trim();
+            
+            if (!text || !answer) {
+                alert('لطفاً متن سوال و پاسخ را وارد کنید');
+                return;
+            }
+            
+            questions.push({
+                type: 'fillBlank',
+                typeName: 'جای خالی',
+                text: text,
+                correct: answer
+            });
+            
+            saveQuestions();
+            updateQuestionsList();
+            document.getElementById('fillBlankText').value = '';
+            document.getElementById('fillBlankAnswer').value = '';
+            alert('سوال با موفقیت اضافه شد');
+        }
+        
+        // افزودن سوال تشریحی
+        function addEssayQuestion() {
+            const text = document.getElementById('essayText').value.trim();
+            const answer = document.getElementById('essayAnswer').value.trim();
+            
+            if (!text) {
+                alert('لطفاً متن سوال را وارد کنید');
+                return;
+            }
+            
+            questions.push({
+                type: 'essay',
+                typeName: 'تشریحی',
+                text: text,
+                correct: answer
+            });
+            
+            saveQuestions();
+            updateQuestionsList();
+            document.getElementById('essayText').value = '';
+            document.getElementById('essayAnswer').value = '';
+            alert('سوال با موفقیت اضافه شد');
+        }
+        
+        // به‌روزرسانی لیست سوالات
+        function updateQuestionsList() {
+            const listContainer = document.getElementById('questionsList');
+            
+            if (questions.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #999;">هنوز سوالی اضافه نشده است</p>';
+                return;
+            }
+            
+            let html = '';
+            questions.forEach((question, index) => {
+                let preview = '';
+                
+                switch(question.type) {
+                    case 'fourChoice':
+                        preview = question.text.substring(0, 60) + (question.text.length > 60 ? '...' : '');
+                        break;
+                    case 'trueFalse':
+                        preview = question.text.substring(0, 60) + (question.text.length > 60 ? '...' : '');
+                        break;
+                    case 'matching':
+                        preview = `وصل کردنی با ${question.items.length} مورد`;
+                        break;
+                    case 'fillBlank':
+                        preview = question.text.substring(0, 60) + (question.text.length > 60 ? '...' : '');
+                        break;
+                    case 'essay':
+                        preview = question.text.substring(0, 60) + (question.text.length > 60 ? '...' : '');
+                        break;
+                }
+                
+                html += `
+                    <div class="question-item">
+                        <div class="question-info">
+                            <span class="question-number">${index + 1}.</span>
+                            <span class="question-type-badge">${question.typeName}</span>
+                            <div class="question-preview">${preview}</div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-warning btn-sm" onclick="editQuestion(${index})">ویرایش</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteQuestion(${index})">حذف</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            listContainer.innerHTML = html;
+        }
+        
+        // ویرایش سوال
+        function editQuestion(index) {
+            const question = questions[index];
+            questions.splice(index, 1);
+            saveQuestions();
+            updateQuestionsList();
+            
+            currentQuestionType = question.type;
+            document.querySelectorAll('.question-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.type === question.type) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.question-form').forEach(form => form.classList.remove('active'));
+            document.getElementById(question.type + 'Form').classList.add('active');
+            
+            switch(question.type) {
+                case 'fourChoice':
+                    document.getElementById('fourChoiceText').value = question.text;
+                    document.getElementById('option1').value = question.options[0];
+                    document.getElementById('option2').value = question.options[1];
+                    document.getElementById('option3').value = question.options[2];
+                    document.getElementById('option4').value = question.options[3];
+                    document.getElementById('correctOption').value = question.correct;
+                    break;
+                case 'trueFalse':
+                    document.getElementById('trueFalseText').value = question.text;
+                    document.getElementById('trueFalseAnswer').value = question.correct;
+                    break;
+                case 'matching':
+                    document.getElementById('matchingItems').value = question.items.join('\n');
+                    document.getElementById('matchingAnswers').value = question.answers.join('\n');
+                    break;
+                case 'fillBlank':
+                    document.getElementById('fillBlankText').value = question.text;
+                    document.getElementById('fillBlankAnswer').value = question.correct;
+                    break;
+                case 'essay':
+                    document.getElementById('essayText').value = question.text;
+                    document.getElementById('essayAnswer').value = question.correct;
+                    break;
+            }
+            
+            alert('سوال برای ویرایش آماده شد. پس از ویرایش، دوباره افزودن را بزنید.');
+        }
+        
+        // حذف سوال
+        function deleteQuestion(index) {
+            if (confirm('آیا مطمئن هستید؟')) {
+                questions.splice(index, 1);
+                saveQuestions();
+                updateQuestionsList();
+            }
+        }
+        
+        // پاک کردن همه سوالات
+        function clearAllQuestions() {
+            if (confirm('آیا مطمئن هستید؟')) {
+                questions = [];
+                saveQuestions();
+                updateQuestionsList();
+            }
+        }
+        
+        // پاک کردن فرم چهار جوابی
+        function clearFourChoiceForm() {
+            document.getElementById('fourChoiceText').value = '';
+            document.getElementById('option1').value = '';
+            document.getElementById('option2').value = '';
+            document.getElementById('option3').value = '';
+            document.getElementById('option4').value = '';
+            document.getElementById('correctOption').value = '1';
+        }
+        
+        // دریافت اطلاعات آزمون
+        function getExamInfo() {
+            return {
+                province: document.getElementById('province').value,
+                city: document.getElementById('city').value,
+                district: document.getElementById('district').value,
+                school: document.getElementById('school').value,
+                grade: document.getElementById('grade').value,
+                className: document.getElementById('class').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                studentName: document.getElementById('studentName').value,
+                designerName: document.getElementById('designerName').value
+            };
+        }
+        
+        // تولید متن آزمون
+        function generateExamHTML() {
+            const info = getExamInfo();
+            let html = `
+                <div style="font-family: Tahoma, Arial; padding: 20px; max-width: 800px; margin: 0 auto;">
+                    <div style="text-align: center; border-bottom: 3px solid #333; padding-bottom: 20px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; color: #333;">آزمون</h2>
+                        <div style="margin-top: 15px; font-size: 14px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; flex-wrap: wrap;">
+                                <span>استان: ${info.province || '________'}</span>
+                                <span>شهرستان: ${info.city || '________'}</span>
+                                <span>ناحیه: ${info.district || '________'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; flex-wrap: wrap;">
+                                <span>مدرسه: ${info.school || '________'}</span>
+                                <span>پایه: ${info.grade || '________'}</span>
+                                <span>کلاس: ${info.className || '________'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; flex-wrap: wrap;">
+                                <span>تاریخ: ${info.date || '________'}</span>
+                                <span>زمان: ${info.time || '________'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                                <span>نام و نام خانوادگی: ${info.studentName || '__________________________'}</span>
+                            </div>
+                        </div>
+                    </div>
+            `;
+            
+            questions.forEach((question, index) => {
+                html += `<div style="margin-bottom: 25px; page-break-inside: avoid;">`;
+                html += `<p style="font-weight: bold; margin-bottom: 10px;">سوال ${index + 1} - ${question.typeName}:</p>`;
+                
+                switch(question.type) {
+                    case 'fourChoice':
+                        html += `<p style="margin-bottom: 10px;">${question.text}</p>`;
+                        html += `<div style="padding-right: 20px;">`;
+                        question.options.forEach((option, optIndex) => {
+                            html += `<p style="margin-bottom: 5px;">${optIndex + 1}) ${option}</p>`;
+                        });
+                        html += `</div>`;
+                        break;
+                    case 'trueFalse':
+                        html += `<p style="margin-bottom: 10px;">${question.text}</p>`;
+                        html += `<div style="padding-right: 20px;"><p>الف) صحیح    ب) غلط</p></div>`;
+                        break;
+                    case 'matching':
+                        html += `<p style="margin-bottom: 10px;">موارد را به پاسخ‌های صحیح وصل کنید:</p>`;
+                        html += `<div style="padding-right: 20px;">`;
+                        question.items.forEach((item, itemIndex) => {
+                            html += `<p style="margin-bottom: 5px;">${itemIndex + 1}. ${item} → ${String.fromCharCode(65 + itemIndex)}. ${question.answers[itemIndex]}</p>`;
+                        });
+                        html += `</div>`;
+                        break;
+                    case 'fillBlank':
+                        html += `<p style="margin-bottom: 10px;">${question.text}</p>`;
+                        break;
+                    case 'essay':
+                        html += `<p style="margin-bottom: 10px;">${question.text}</p>`;
+                        html += `<div style="height: 100px; border-bottom: 1px solid #ccc; margin-top: 20px;"></div>`;
+                        break;
+                }
+                html += `</div>`;
+            });
+            
+            html += `
+                    <div style="text-align: center; margin-top: 30px; border-top: 2px solid #333; padding-top: 10px;">
+                        <p style="font-weight: bold;">طراح سوال: ${info.designerName || '__________________________'}</p>
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+        
+        // تولید پاسخنامه
+        function generateAnswerKeyHTML() {
+            const info = getExamInfo();
+            let html = `
+                <div style="font-family: Tahoma, Arial; padding: 20px; max-width: 800px; margin: 0 auto;">
+                    <div style="text-align: center; border-bottom: 3px solid #333; padding-bottom: 20px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; color: #333;">پاسخنامه</h2>
+                    </div>
+            `;
+            
+            questions.forEach((question, index) => {
+                html += `<div style="margin-bottom: 20px; page-break-inside: avoid;">`;
+                html += `<p style="font-weight: bold; margin-bottom: 10px;">سوال ${index + 1} - ${question.typeName}:</p>`;
+                
+                switch(question.type) {
+                    case 'fourChoice':
+                        html += `<p>پاسخ صحیح: گزینه ${question.correct}</p>`;
+                        break;
+                    case 'trueFalse':
+                        html += `<p>پاسخ صحیح: ${question.correct}</p>`;
+                        break;
+                    case 'matching':
+                        html += `<p>پاسخ‌های صحیح:</p>`;
+                        question.items.forEach((item, itemIndex) => {
+                            html += `<p>${itemIndex + 1}. ${item} → ${question.answers[itemIndex]}</p>`;
+                        });
+                        break;
+                    case 'fillBlank':
+                        html += `<p>پاسخ صحیح: ${question.correct}</p>`;
+                        break;
+                    case 'essay':
+                        html += `<p>${question.correct ? 'پاسخ: ' + question.correct : 'پاسخ تشریحی'}</p>`;
+                        break;
+                }
+                html += `</div>`;
+            });
+            
+            html += `</div>`;
+            return html;
+        }
+        
+        // چاپ
+        function printContent(content) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="fa" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>چاپ</title>
+                </head>
+                <body>${content}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        function printExam() {
+            if (questions.length === 0) {
+                alert('هیچ سوالی وجود ندارد');
+                return;
+            }
+            printContent(generateExamHTML());
+        }
+        
+        function printAnswerKey() {
+            if (questions.length === 0) {
+                alert('هیچ سوالی وجود ندارد');
+                return;
+            }
+            printContent(generateAnswerKeyHTML());
+        }
+        
+        // خروجی به فایل
+        function exportToFile() {
+            if (questions.length === 0) {
+                alert('هیچ سوالی وجود ندارد');
+                return;
+            }
+            
+            const data = {
+                info: getExamInfo(),
+                questions: questions
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'exam_data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // وارد کردن از فایل
+        function importFromFile() {
+            document.getElementById('fileInput').click();
+        }
+        
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    
+                    if (data.info) {
+                        document.getElementById('province').value = data.info.province || '';
+                        document.getElementById('city').value = data.info.city || '';
+                        document.getElementById('district').value = data.info.district || '';
+                        document.getElementById('school').value = data.info.school || '';
+                        document.getElementById('grade').value = data.info.grade || '';
+                        document.getElementById('class').value = data.info.className || '';
+                        document.getElementById('date').value = data.info.date || '';
+                        document.getElementById('time').value = data.info.time || '';
+                        document.getElementById('studentName').value = data.info.studentName || '';
+                        document.getElementById('designerName').value = data.info.designerName || '';
+                    }
+                    
+                    if (data.questions) {
+                        questions = data.questions;
+                        saveQuestions();
+                        updateQuestionsList();
+                    }
+                    
+                    alert('داده‌ها با موفقیت وارد شدند');
+                } catch (error) {
+                    alert('خطا: ' + error.message);
+                }
+            };
+            
+            reader.readAsText(file);
+            this.value = '';
+        });
+        
+        // ثبت Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+        
+        // تنظیم تاریخ پیش‌فرض
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // بارگذاری سوالات ذخیره شده
+        loadQuestions();
+    </script>
+</body>
+</html>
